@@ -4,7 +4,7 @@ import { animate, useMotionValue } from "framer-motion";
 
 import { motion } from "framer-motion-3d";
 import { atom, useAtom } from "jotai";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const projects = [
   {
@@ -25,27 +25,27 @@ export const projects = [
     image: "projects/ochiClone..jpg",
     description: "Use React,Gsap and framer motion to clone Awwwards",
   },
-  { 
+  {
     title: "Research Project",
     url: "",
     image: "projects/research.jpg",
     description: "using Deep learning models to detect pre impact fall",
   },
-   { 
+  {
     title: "Gitmate",
     url: "https://github.com/callmegus4444/gitmate",
     image: "projects/gitmate.png",
     description: " GitHub Integration: Link repositories and fetch real commit data",
   },
- 
- 
+
+
 ];
 
 const Project = (props) => {
   const { project, highlighted } = props;
-
   const background = useRef();
   const bgOpacity = useMotionValue(0.4);
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     animate(bgOpacity, highlighted ? 0.7 : 0.4);
@@ -60,35 +60,49 @@ const Project = (props) => {
       <mesh
         position-z={-0.001}
         onClick={() => window.open(project.url, "_blank")}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
         ref={background}
       >
-        <planeGeometry args={[2.2, 2]} />
+        <planeGeometry args={[2.5, 2.3]} />
         <meshBasicMaterial color="black" transparent opacity={0.4} />
       </mesh>
-      <Image
-        scale={[2, 1.2, 1]}
-        url={project.image}
-        toneMapped={false}
-        position-y={0.3}
-      />
-      <Text
-        maxWidth={2}
-        anchorX={"left"}
-        anchorY={"top"}
-        fontSize={0.2}
-        position={[-1, -0.4, 0]}
+
+      <motion.group
+        animate={{
+          scale: hovered ? 1.1 : 1, // Smooth zoom effect on hover
+          z: hovered ? 0.2 : 0, // Pop out slightly
+        }}
+        transition={{
+          duration: 0.3,
+          ease: "easeOut"
+        }}
       >
-        {project.title.toUpperCase()}
-      </Text>
-      <Text
-        maxWidth={2}
-        anchorX="left"
-        anchorY="top"
-        fontSize={0.1}
-        position={[-1, -0.6, 0]}
-      >
-        {project.description}
-      </Text>
+        <Image
+          scale={[2.4, 1.4, 1]}
+          url={project.image}
+          toneMapped={false}
+          position-y={0.3}
+        />
+        <Text
+          maxWidth={2.2}
+          anchorX={"left"}
+          anchorY={"top"}
+          fontSize={0.22}
+          position={[-1.1, -0.5, 0]}
+        >
+          {project.title.toUpperCase()}
+        </Text>
+        <Text
+          maxWidth={2.2}
+          anchorX="left"
+          anchorY="top"
+          fontSize={0.12}
+          position={[-1.1, -0.75, 0]}
+        >
+          {project.description}
+        </Text>
+      </motion.group>
     </group>
   );
 };
@@ -97,25 +111,46 @@ export const currentProjectAtom = atom(Math.floor(projects.length / 2));
 
 export const Projects = () => {
   const { viewport } = useThree();
-  const [currentProject] = useAtom(currentProjectAtom);
+  const [currentProject, setCurrentProject] = useAtom(currentProjectAtom);
+
+  // Carousel Configuration - Moved to top
+  const radius = 4.5;
+  const totalProjects = projects.length;
+  const angleStep = (2 * Math.PI) / totalProjects;
 
   return (
     <group position-y={-viewport.height * 2 + 1}>
-      {projects.map((project, index) => (
-        <motion.group
-          key={"project_" + index}
-          position={[index * 2.5, 0, -3]}
-          animate={{
-            x: 0 + (index - currentProject) * 2.5,
-            y: currentProject === index ? 0 : -0.1,
-            z: currentProject === index ? -2 : -3,
-            rotateX: currentProject === index ? 0 : -Math.PI / 3,
-            rotateZ: currentProject === index ? 0 : -0.1 * Math.PI,
-          }}
-        >
-          <Project project={project} highlighted={index === currentProject} />
-        </motion.group>
-      ))}
+      {/* Rotate the entire group to bring current project to front */}
+      <motion.group
+        animate={{
+          rotateY: -currentProject * angleStep,
+        }}
+        transition={{
+          duration: 1,
+          type: "spring",
+          stiffness: 40,
+        }}
+      >
+        {projects.map((project, index) => {
+          const angle = index * angleStep;
+          const x = radius * Math.sin(angle);
+          const z = radius * Math.cos(angle);
+          const rotY = angle;
+
+          return (
+            <motion.group
+              key={"project_" + index}
+              position={[x, 0, z]}
+              rotation={[0, rotY, 0]}
+            >
+              <Project
+                project={project}
+                highlighted={index === currentProject}
+              />
+            </motion.group>
+          );
+        })}
+      </motion.group>
     </group>
   );
 };

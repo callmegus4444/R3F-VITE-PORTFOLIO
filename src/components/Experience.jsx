@@ -10,7 +10,6 @@ import { motion } from "framer-motion-3d";
 import { useEffect, useRef, useState } from "react";
 import { framerMotionConfig } from "../config";
 import { Avatar } from "./Avatar";
-import { Background } from "./Background";
 import { Office } from "./Office";
 import { Projects } from "./Projects";
 
@@ -19,7 +18,7 @@ export const Experience = (props) => {
   const { viewport } = useThree();
   const data = useScroll();
 
-    const isMobile = window.innerWidth < 768;
+  const isMobile = window.innerWidth < 768;
   const responsiveRatio = viewport.width / 12;
   const officeScaleRatio = Math.max(0.5, Math.min(0.9 * responsiveRatio, 0.9));
 
@@ -41,10 +40,7 @@ export const Experience = (props) => {
 
   const [characterAnimation, setCharacterAnimation] = useState("Typing");
   useEffect(() => {
-    setCharacterAnimation("Falling");
-    setTimeout(() => {
-      setCharacterAnimation(section === 0 ? "Typing" : "Standing");
-    }, 600);
+    setCharacterAnimation(section === 0 ? "Typing" : "Standing");
   }, [section]);
 
   const characterGroup = useRef();
@@ -64,8 +60,8 @@ export const Experience = (props) => {
     state.camera.lookAt(cameraLookAtX.get(), 0, 0);
 
     // const position = new THREE.Vector3();
-    if(section===0){   
-     characterContainerAboutRef.current.getWorldPosition(characterGroup.current.position);
+    if (section === 0) {
+      characterContainerAboutRef.current.getWorldPosition(characterGroup.current.position);
     }
     // console.log([position.x, position.y, position.z]);
 
@@ -79,7 +75,6 @@ export const Experience = (props) => {
 
   return (
     <>
-      <Background />
       <motion.group
         ref={characterGroup}
         rotation={[-3.141592653589793, 1.2053981633974482, 3.141592653589793]}
@@ -106,15 +101,15 @@ export const Experience = (props) => {
             scaleZ: isMobile ? 1.5 : 1,
           },
           2: {
-            x: isMobile ? -1.4 : -2,
+            x: isMobile ? -1.4 : 2.8, // Moved slightly more right (2.5 -> 2.8)
             y: -viewport.height * 2 + 0.5,
             z: 0,
             rotateX: 0,
-            rotateY: Math.PI / 2,
+            rotateY: Math.PI / 4,
             rotateZ: 0,
-            scaleX: 1,
-            scaleY: 1,
-            scaleZ: 1,
+            scaleX: 1.1, // Increased scale (height)
+            scaleY: 1.1,
+            scaleZ: 1.1,
           },
           3: {
             y: -viewport.height * 3 + 1,
@@ -129,7 +124,7 @@ export const Experience = (props) => {
           },
         }}
       >
-        <Avatar animations={characterAnimation} wireframe= {section===1} />
+        <Avatar animations={characterAnimation} wireframe={section === 1} />
       </motion.group>
       <ambientLight intensity={1} />
       <motion.group
@@ -158,7 +153,7 @@ export const Experience = (props) => {
 
       {/* SKILLS */}
       <motion.group
-       position={[
+        position={[
           0,
           isMobile ? -viewport.height : -1.5 * officeScaleRatio,
           -10,
@@ -169,8 +164,8 @@ export const Experience = (props) => {
             section === 1
               ? -viewport.height
               : isMobile
-              ? -viewport.height
-              : -1.5 * officeScaleRatio,
+                ? -viewport.height
+                : -1.5 * officeScaleRatio,
         }}
       >
         <directionalLight position={[-5, 3, 5]} intensity={0.4} />
