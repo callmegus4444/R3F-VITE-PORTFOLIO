@@ -12,6 +12,8 @@ import { framerMotionConfig } from "../config";
 import { Avatar } from "./Avatar";
 import { Office } from "./Office";
 import { Projects } from "./Projects";
+import { Rocket, rocketModeAtom } from "./Rocket";
+import { useAtom } from "jotai";
 
 export const Experience = (props) => {
   const { menuOpened } = props;
@@ -23,6 +25,7 @@ export const Experience = (props) => {
   const officeScaleRatio = Math.max(0.5, Math.min(0.9 * responsiveRatio, 0.9));
 
   const [section, setSection] = useState(0);
+  const [rocketMode] = useAtom(rocketModeAtom);
 
   const cameraPositionX = useMotionValue();
   const cameraLookAtX = useMotionValue();
@@ -39,11 +42,10 @@ export const Experience = (props) => {
   const characterContainerAboutRef = useRef();
 
   const [characterAnimation, setCharacterAnimation] = useState("Typing");
-  useEffect(() => {
-    setCharacterAnimation(section === 0 ? "Typing" : "Standing");
-  }, [section]);
 
+  const lastScroll = useRef(0);
   const characterGroup = useRef();
+  const fallingGracePeriod = useRef(0);
 
   useFrame((state) => {
     let curSection = Math.floor(data.scroll.current * data.pages);
@@ -58,6 +60,26 @@ export const Experience = (props) => {
 
     state.camera.position.x = cameraPositionX.get();
     state.camera.lookAt(cameraLookAtX.get(), 0, 0);
+
+    // Animation Logic
+    const isScrollingDown = data.scroll.current > lastScroll.current;
+    lastScroll.current = data.scroll.current;
+
+    if (isScrollingDown && data.delta > 0.001) {
+      if (characterAnimation !== "Falling") {
+        setCharacterAnimation("Falling");
+      }
+      fallingGracePeriod.current = 10; // Keep falling for 10 frames (~160ms) after scroll stops
+    } else {
+      if (fallingGracePeriod.current > 0) {
+        fallingGracePeriod.current -= 1;
+      } else {
+        const targetAnimation = curSection === 0 ? "Typing" : "Standing";
+        if (characterAnimation !== targetAnimation) {
+          setCharacterAnimation(targetAnimation);
+        }
+      }
+    }
 
     // const position = new THREE.Vector3();
     if (section === 0) {
@@ -77,6 +99,7 @@ export const Experience = (props) => {
     <>
       <motion.group
         ref={characterGroup}
+        visible={!rocketMode} // Hide when rocket is active
         rotation={[-3.141592653589793, 1.2053981633974482, 3.141592653589793]}
         scale={[officeScaleRatio, officeScaleRatio, officeScaleRatio]}
         animate={"" + section}
@@ -128,6 +151,7 @@ export const Experience = (props) => {
       </motion.group>
       <ambientLight intensity={1} />
       <motion.group
+        visible={!rocketMode}
         position={[
           isMobile ? 0 : 1.5 * officeScaleRatio,
           isMobile ? -viewport.height / 6 : 2,
@@ -152,7 +176,9 @@ export const Experience = (props) => {
       </motion.group>
 
       {/* SKILLS */}
+      {/* SKILLS */}
       <motion.group
+        visible={!rocketMode} // Hide floating shapes
         position={[
           0,
           isMobile ? -viewport.height : -1.5 * officeScaleRatio,
@@ -206,7 +232,12 @@ export const Experience = (props) => {
           </mesh>
         </Float>
       </motion.group>
-      <Projects />
+
+      <group visible={!rocketMode}>
+        <Projects />
+      </group>
+
+      <Rocket />
     </>
   );
 };

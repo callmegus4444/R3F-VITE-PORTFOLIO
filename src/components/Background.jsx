@@ -3,6 +3,8 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { gsap } from "gsap";
 import { useEffect, useRef, useMemo } from "react";
 import * as THREE from "three";
+import { useAtom } from "jotai";
+import { rocketModeAtom } from "./Rocket";
 
 export const Background = ({ darkMode }) => {
   const material = useRef();
@@ -13,6 +15,7 @@ export const Background = ({ darkMode }) => {
   const data = useScroll();
   const tl = useRef();
   const { mouse, viewport } = useThree();
+  const [rocketMode] = useAtom(rocketModeAtom);
 
   // Mouse position for particle interaction
   const mousePos = useRef({ x: 0, y: 0 });
@@ -21,7 +24,9 @@ export const Background = ({ darkMode }) => {
     // Only trigger color change after scroll passes 0.2
     const scroll = data.scroll.current;
     const mappedScroll = Math.max(0, (scroll - 0.2) / 0.8);
-    tl.current.progress(mappedScroll);
+    if (tl.current) {
+      tl.current.progress(mappedScroll);
+    }
     material.current.color = new THREE.Color(color.current.color);
 
     // Animate sparkles based on mouse - REMOVED GLOBAL SWAY
@@ -83,14 +88,70 @@ export const Background = ({ darkMode }) => {
       </group>
 
       {/* Ambient floating particles */}
-      <Sparkles
-        count={50}
-        scale={25}
-        size={2}
-        speed={0.1}
-        opacity={0.3}
-        color="#c7d2fe"
-      />
+      {!rocketMode && (
+        <Sparkles
+          count={50}
+          scale={25}
+          size={2}
+          speed={0.1}
+          opacity={0.3}
+          color="#c7d2fe"
+        />
+      )}
+      {rocketMode && <Meteors />}
     </group>
+  );
+};
+
+// Warp Speed Effect
+const Meteors = () => {
+  const mesh = useRef();
+  const { viewport } = useThree();
+  const count = 100; // significantly reduced from 500
+
+  // Initial positions
+  const particles = useMemo(() => {
+    const temp = [];
+    for (let i = 0; i < count; i++) {
+      const x = (Math.random() - 0.5) * viewport.width * 2;
+      const y = (Math.random() - 0.5) * viewport.height * 2;
+      const z = (Math.random() - 0.5) * 10;
+      const speed = 0.5 + Math.random();
+      // Shorter length: 0.5 to 3.5
+      temp.push({ x, y, z, speed, len: 0.5 + Math.random() * 3 });
+    }
+    return temp;
+  }, [viewport]);
+
+  useFrame((state, delta) => {
+    if (!mesh.current) return;
+
+    // Loop through instances
+    const dummy = new THREE.Object3D();
+
+    particles.forEach((particle, i) => {
+      // Move down
+      particle.y -= particle.speed * 20 * delta; // Speed 20
+
+      // Loop
+      if (particle.y < -viewport.height) {
+        particle.y = viewport.height + Math.random() * 5;
+        particle.x = (Math.random() - 0.5) * viewport.width * 2; // Reshuffle X
+      }
+
+      dummy.position.set(particle.x, particle.y, particle.z);
+      // Thinner (0.02) and using the shorter length
+      dummy.scale.set(0.02, particle.len, 0.02);
+      dummy.updateMatrix();
+      mesh.current.setMatrixAt(i, dummy.matrix);
+    });
+    mesh.current.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh ref={mesh} args={[null, null, count]}>
+      <boxGeometry />
+      <meshBasicMaterial color="white" transparent opacity={0.6} />
+    </instancedMesh>
   );
 };

@@ -16,7 +16,7 @@ function App() {
   const [section, setSection] = useState(0);
   const [started, setStarted] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
 
   // Toggle dark class on html element
   useEffect(() => {
@@ -58,6 +58,8 @@ function App() {
         </Canvas>
         <Menu onSectionChange={setSection} menuOpened={menuOpened} setMenuOpened={setMenuOpened} darkMode={darkMode} setDarkMode={setDarkMode} />
         <Cursor />
+
+        {/* Rocket Launch Button removed (moved to Interface.jsx) */}
 
         {/* Floating Theme Toggle Button */}
         <button

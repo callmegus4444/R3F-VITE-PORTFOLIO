@@ -3,8 +3,13 @@ import { useFrame } from "@react-three/fiber";
 import { gsap } from "gsap";
 import { useEffect, useRef } from "react";
 
+import { rocketModeAtom } from "./Rocket";
+import { useAtom } from "jotai";
+
 export const ScrollManager = (props) => {
   const { section, onSectionChange } = props;
+
+  const [rocketMode, setRocketMode] = useAtom(rocketModeAtom);
 
   const data = useScroll();
   const lastScroll = useRef(0);
@@ -25,6 +30,29 @@ export const ScrollManager = (props) => {
       },
     });
   }, [section]);
+
+  useEffect(() => {
+    if (rocketMode) {
+      // Rocket Sequence
+      // 1. Wait for iris transition (set externally or rough timing here)
+      // 2. Start Scroll Up slowly
+      setTimeout(() => {
+        gsap.to(data.el, {
+          duration: 5, // Slow ascent
+          scrollTop: 0,
+          ease: "power2.inOut",
+          onStart: () => {
+            isAnimating.current = true;
+          },
+          onComplete: () => {
+            isAnimating.current = false;
+            setRocketMode(false);
+            onSectionChange(0);
+          },
+        });
+      }, 2000); // Wait 2s for "Engine Start" / Transition
+    }
+  }, [rocketMode]);
 
   useFrame(() => {
     if (isAnimating.current) {

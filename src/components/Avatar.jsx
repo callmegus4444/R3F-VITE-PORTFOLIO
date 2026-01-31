@@ -10,12 +10,12 @@ import { useControls } from 'leva'
 import * as THREE from "three";
 
 export function Avatar(props) {
-    const { animations , wireframe} = props
+    const { animations, wireframe } = props
 
     const { headFollow, cursorFollow } = useControls({
         headFollow: false,
         cursorFollow: false,
-        
+
     });
 
     const group = useRef()
@@ -28,7 +28,8 @@ export function Avatar(props) {
     StandingAnimation[0].name = "Standing";
     FallingAnimation[0].name = "Falling";
 
-    const { actions } = useAnimations([typingAnimation[0], StandingAnimation[0], FallingAnimation[0]], group);
+    const animationList = React.useMemo(() => [typingAnimation[0], StandingAnimation[0], FallingAnimation[0]], [typingAnimation, StandingAnimation, FallingAnimation]);
+    const { actions } = useAnimations(animationList, group);
 
     useFrame((state) => {
         if (headFollow && group.current) {
@@ -47,10 +48,10 @@ export function Avatar(props) {
     useEffect(() => {
         // Make sure animations prop exists and is a valid key in actions
         if (animations && actions && actions[animations]) {
-            actions[animations].reset().fadeIn(0.5).play();
+            actions[animations].reset().fadeIn(0.2).play();
             return () => {
                 if (actions[animations]) {
-                    actions[animations].reset().fadeOut(0.75);
+                    actions[animations].fadeOut(0.2);
                 }
             };
         } else {
@@ -75,15 +76,15 @@ export function Avatar(props) {
         <group {...props} ref={group} dispose={null}>
             <group rotation-x={-Math.PI / 2}>
                 <primitive object={nodes.Hips} />
-                <skinnedMesh  frustumCulled={false} geometry={nodes.Wolf3D_Headwear.geometry} material={materials.Wolf3D_Headwear} skeleton={nodes.Wolf3D_Headwear.skeleton} />
+                <skinnedMesh frustumCulled={false} geometry={nodes.Wolf3D_Headwear.geometry} material={materials.Wolf3D_Headwear} skeleton={nodes.Wolf3D_Headwear.skeleton} />
                 <skinnedMesh frustumCulled={false} geometry={nodes.Wolf3D_Body.geometry} material={materials.Wolf3D_Body} skeleton={nodes.Wolf3D_Body.skeleton} />
                 <skinnedMesh frustumCulled={false} geometry={nodes.Wolf3D_Outfit_Bottom.geometry} material={materials.Wolf3D_Outfit_Bottom} skeleton={nodes.Wolf3D_Outfit_Bottom.skeleton} />
                 <skinnedMesh frustumCulled={false} geometry={nodes.Wolf3D_Outfit_Footwear.geometry} material={materials.Wolf3D_Outfit_Footwear} skeleton={nodes.Wolf3D_Outfit_Footwear.skeleton} />
                 <skinnedMesh frustumCulled={false} geometry={nodes.Wolf3D_Outfit_Top.geometry} material={materials.Wolf3D_Outfit_Top} skeleton={nodes.Wolf3D_Outfit_Top.skeleton} />
-                <skinnedMesh  frustumCulled={false} name="EyeLeft" geometry={nodes.EyeLeft.geometry} material={materials.Wolf3D_Eye} skeleton={nodes.EyeLeft.skeleton} morphTargetDictionary={nodes.EyeLeft.morphTargetDictionary} morphTargetInfluences={nodes.EyeLeft.morphTargetInfluences} />
+                <skinnedMesh frustumCulled={false} name="EyeLeft" geometry={nodes.EyeLeft.geometry} material={materials.Wolf3D_Eye} skeleton={nodes.EyeLeft.skeleton} morphTargetDictionary={nodes.EyeLeft.morphTargetDictionary} morphTargetInfluences={nodes.EyeLeft.morphTargetInfluences} />
                 <skinnedMesh frustumCulled={false} name="EyeRight" geometry={nodes.EyeRight.geometry} material={materials.Wolf3D_Eye} skeleton={nodes.EyeRight.skeleton} morphTargetDictionary={nodes.EyeRight.morphTargetDictionary} morphTargetInfluences={nodes.EyeRight.morphTargetInfluences} />
-                <skinnedMesh frustumCulled  ={false} name="Wolf3D_Head" geometry={nodes.Wolf3D_Head.geometry} material={materials.Wolf3D_Skin} skeleton={nodes.Wolf3D_Head.skeleton} morphTargetDictionary={nodes.Wolf3D_Head.morphTargetDictionary} morphTargetInfluences={nodes.Wolf3D_Head.morphTargetInfluences} />
-                <skinnedMesh  frustumCulled={false} name="Wolf3D_Teeth" geometry={nodes.Wolf3D_Teeth.geometry} material={materials.Wolf3D_Teeth} skeleton={nodes.Wolf3D_Teeth.skeleton} morphTargetDictionary={nodes.Wolf3D_Teeth.morphTargetDictionary} morphTargetInfluences={nodes.Wolf3D_Teeth.morphTargetInfluences} />
+                <skinnedMesh frustumCulled={false} name="Wolf3D_Head" geometry={nodes.Wolf3D_Head.geometry} material={materials.Wolf3D_Skin} skeleton={nodes.Wolf3D_Head.skeleton} morphTargetDictionary={nodes.Wolf3D_Head.morphTargetDictionary} morphTargetInfluences={nodes.Wolf3D_Head.morphTargetInfluences} />
+                <skinnedMesh frustumCulled={false} name="Wolf3D_Teeth" geometry={nodes.Wolf3D_Teeth.geometry} material={materials.Wolf3D_Teeth} skeleton={nodes.Wolf3D_Teeth.skeleton} morphTargetDictionary={nodes.Wolf3D_Teeth.morphTargetDictionary} morphTargetInfluences={nodes.Wolf3D_Teeth.morphTargetInfluences} />
                 <skinnedMesh frustumCulled={false} name="Wolf3D_Beard" geometry={nodes.Wolf3D_Beard.geometry} material={materials.Wolf3D_Beard} skeleton={nodes.Wolf3D_Beard.skeleton} morphTargetDictionary={nodes.Wolf3D_Beard.morphTargetDictionary} morphTargetInfluences={nodes.Wolf3D_Beard.morphTargetInfluences} />
             </group>
         </group>
@@ -92,5 +93,5 @@ export function Avatar(props) {
 
 useGLTF.preload('models/67d53481233a52bf17ac7bcf.glb')
 useFBX.preload("animations/Typing.fbx")
- useFBX.preload("animations/Standing.fbx")
- useFBX.preload("animations/Falling.fbx")
+useFBX.preload("animations/Standing.fbx")
+useFBX.preload("animations/Falling.fbx")

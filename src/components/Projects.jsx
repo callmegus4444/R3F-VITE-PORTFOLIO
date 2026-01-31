@@ -113,13 +113,19 @@ export const Projects = () => {
   const { viewport } = useThree();
   const [currentProject, setCurrentProject] = useAtom(currentProjectAtom);
 
-  // Carousel Configuration - Moved to top
-  const radius = 4.5;
+  // Mobile detection
+  const isMobile = viewport.width < 5;
+
+  // Carousel Configuration - Responsive
+  const radius = isMobile ? 3 : 4.5;
   const totalProjects = projects.length;
   const angleStep = (2 * Math.PI) / totalProjects;
 
+  // Scale factor for mobile
+  const projectScale = isMobile ? 0.6 : 1;
+
   return (
-    <group position-y={-viewport.height * 2 + 1}>
+    <group position-y={-viewport.height * 2 + (isMobile ? 0.5 : 1)}>
       {/* Rotate the entire group to bring current project to front */}
       <motion.group
         animate={{
@@ -142,6 +148,7 @@ export const Projects = () => {
               key={"project_" + index}
               position={[x, 0, z]}
               rotation={[0, rotY, 0]}
+              scale={projectScale}
             >
               <Project
                 project={project}
