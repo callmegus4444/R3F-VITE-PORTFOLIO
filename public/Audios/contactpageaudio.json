@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "soundFile": "C:\\Users\\amanbatra\\r3f-vite-starter\\public\\Audios\\contactpageaudio.ogg",
+    "duration": 2.26
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.12, "value": "X" },
+    { "start": 0.12, "end": 0.34, "value": "E" },
+    { "start": 0.34, "end": 0.48, "value": "F" },
+    { "start": 0.48, "end": 0.55, "value": "C" },
+    { "start": 0.55, "end": 0.76, "value": "B" },
+    { "start": 0.76, "end": 0.83, "value": "C" },
+    { "start": 0.83, "end": 0.97, "value": "B" },
+    { "start": 0.97, "end": 1.04, "value": "C" },
+    { "start": 1.04, "end": 1.25, "value": "E" },
+    { "start": 1.25, "end": 1.39, "value": "B" },
+    { "start": 1.39, "end": 1.53, "value": "E" },
+    { "start": 1.53, "end": 1.60, "value": "G" },
+    { "start": 1.60, "end": 1.74, "value": "C" },
+    { "start": 1.74, "end": 1.95, "value": "B" },
+    { "start": 1.95, "end": 2.26, "value": "X" }
+  ]
+}

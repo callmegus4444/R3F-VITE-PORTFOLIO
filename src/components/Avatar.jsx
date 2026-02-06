@@ -8,9 +8,11 @@ import { useAnimations, useFBX, useGLTF } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
 import { useControls } from 'leva'
 import * as THREE from "three";
+import { isSpeakingAtom } from "./AudioState";
+import { useAtom } from "jotai";
 
 export function Avatar(props) {
-    const { animations, wireframe } = props
+    const { animations, wireframe, script } = props
 
     const { headFollow, cursorFollow } = useControls({
         headFollow: false,
@@ -20,6 +22,7 @@ export function Avatar(props) {
 
     const group = useRef()
     const { scene } = useGLTF('models/67d53481233a52bf17ac7bcf.glb')
+    const [isSpeaking, setIsSpeaking] = useAtom(isSpeakingAtom);
 
     const { animations: typingAnimation } = useFBX("animations/Typing.fbx")
     const { animations: StandingAnimation } = useFBX("animations/Standing.fbx")
@@ -30,6 +33,65 @@ export function Avatar(props) {
 
     const animationList = React.useMemo(() => [typingAnimation[0], StandingAnimation[0], FallingAnimation[0]], [typingAnimation, StandingAnimation, FallingAnimation]);
     const { actions } = useAnimations(animationList, group);
+
+    // Audio & Lip Sync Logic
+    const audio = useRef(new Audio(""));
+    const [lipsync, setLipsync] = React.useState(null);
+
+    useEffect(() => {
+        if (!script) {
+            audio.current.pause();
+            return;
+        }
+
+        const audioPath = `/Audios/${script}.ogg`;
+        const jsonPath = `/Audios/${script}.json`;
+
+        console.log("Attempting to play:", audioPath);
+
+        // Load Audio
+        audio.current.src = audioPath;
+        audio.current.playbackRate = 1.3; // Increase speed
+        audio.current.play().then(() => {
+            setIsSpeaking(true);
+        }).catch(e => {
+            console.warn("Audio playback failed - Autoplay might be blocked. waiting for interaction.", e);
+            const playOnInteract = () => {
+                audio.current.play();
+                setIsSpeaking(true);
+                window.removeEventListener('click', playOnInteract);
+                window.removeEventListener('keydown', playOnInteract);
+                window.removeEventListener('touchstart', playOnInteract);
+            };
+            window.addEventListener('click', playOnInteract);
+            window.addEventListener('keydown', playOnInteract);
+            window.addEventListener('touchstart', playOnInteract);
+        });
+
+        audio.current.onended = () => {
+            setIsSpeaking(false);
+        };
+
+        // Load Lip Sync JSON
+        const loader = new THREE.FileLoader();
+        loader.load(jsonPath, (data) => {
+            try {
+                setLipsync(JSON.parse(data));
+            } catch (e) {
+                console.error("Failed to parse lip sync JSON:", e);
+            }
+        });
+
+        return () => {
+            // Only pause if we are switching to a new script or unmounting
+            // If we want it to persist across simple re-renders we might need to check dependencies better
+            // But here script change implies track change.
+            audio.current.pause();
+        }
+
+    }, [script]);
+
+    const { nodes, materials } = useGraph(scene); // Move useGraph up to access morph targets
 
     useFrame((state) => {
         if (headFollow && group.current) {
@@ -42,6 +104,45 @@ export function Avatar(props) {
                 const target = new THREE.Vector3(state.mouse.x, state.mouse.y, 1);
                 spine.lookAt(target);
             }
+        }
+
+        // Lip Sync Animation
+        if (lipsync && audio.current) {
+            const currentAudioTime = audio.current.currentTime;
+
+            // Determine active viseme
+            let activeViseme = null;
+            for (let i = 0; i < lipsync.mouthCues.length; i++) {
+                const cue = lipsync.mouthCues[i];
+                if (currentAudioTime >= cue.start && currentAudioTime <= cue.end) {
+                    activeViseme = corresponding[cue.value];
+                    break;
+                }
+            }
+
+            // Lerp all morph targets
+            Object.values(corresponding).forEach((value) => {
+                const targetIndexHead = nodes.Wolf3D_Head.morphTargetDictionary[value];
+                const targetIndexTeeth = nodes.Wolf3D_Teeth.morphTargetDictionary[value];
+
+                if (targetIndexHead !== undefined && targetIndexTeeth !== undefined) {
+                    // If this is the active viseme, target 1. If not, target 0.
+                    const targetInfluence = (activeViseme === value) ? 1 : 0;
+
+                    // Smoothly transition current value to target value
+                    nodes.Wolf3D_Head.morphTargetInfluences[targetIndexHead] = THREE.MathUtils.lerp(
+                        nodes.Wolf3D_Head.morphTargetInfluences[targetIndexHead],
+                        targetInfluence,
+                        0.1 // Adjust this value for speed (0.1 is smooth, 0.5 is snappy)
+                    );
+
+                    nodes.Wolf3D_Teeth.morphTargetInfluences[targetIndexTeeth] = THREE.MathUtils.lerp(
+                        nodes.Wolf3D_Teeth.morphTargetInfluences[targetIndexTeeth],
+                        targetInfluence,
+                        0.1
+                    );
+                }
+            });
         }
     });
 
@@ -59,9 +160,9 @@ export function Avatar(props) {
         }
     }, [animations, actions]);
 
-    // Clone the scene
-    const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
-    const { nodes, materials } = useGraph(clone)
+    // Clone the scene - Removing this since we used useGraph(scene) directly above to get nodes early
+    // const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
+    // const { nodes, materials } = useGraph(clone)
 
     // Apply wireframe effect
     useEffect(() => {
@@ -71,6 +172,18 @@ export function Avatar(props) {
             });
         }
     }, [wireframe, materials]);
+
+    const corresponding = {
+        A: "viseme_PP",
+        B: "viseme_kk",
+        C: "viseme_I",
+        D: "viseme_AA",
+        E: "viseme_O",
+        F: "viseme_U",
+        G: "viseme_FF",
+        H: "viseme_TH",
+        X: "viseme_PP",
+    };
 
     return (
         <group {...props} ref={group} dispose={null}>

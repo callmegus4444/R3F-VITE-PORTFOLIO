@@ -85,9 +85,9 @@ body {
 
 /* Theme Toggle Button */
 .theme-toggle {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 1.5rem;
+  /* position: fixed; Removed to allow flex layout */
+  /* bottom: 1.5rem; */
+  /* left: 1.5rem; */
   z-index: 50;
   width: 3rem;
   height: 3rem;

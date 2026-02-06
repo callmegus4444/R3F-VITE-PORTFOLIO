@@ -47,6 +47,12 @@ export const Experience = (props) => {
   const characterGroup = useRef();
   const fallingGracePeriod = useRef(0);
 
+
+  const [audio, setAudio] = useState(false);
+  useEffect(() => {
+    setAudio(true);
+  }, []);
+
   useFrame((state) => {
     let curSection = Math.floor(data.scroll.current * data.pages);
 
@@ -113,15 +119,15 @@ export const Experience = (props) => {
             scaleZ: officeScaleRatio,
           },
           1: {
-            y: -viewport.height + 0.5,
+            y: -viewport.height + 0.8,
             x: isMobile ? 0.3 : 0,
             z: 7,
             rotateX: 0,
             rotateY: isMobile ? -Math.PI / 2 : 0,
             rotateZ: 0,
-            scaleX: isMobile ? 1.5 : 1,
-            scaleY: isMobile ? 1.5 : 1,
-            scaleZ: isMobile ? 1.5 : 1,
+            scaleX: isMobile ? 1.0 : 1,
+            scaleY: isMobile ? 1.0 : 1,
+            scaleZ: isMobile ? 1.0 : 1,
           },
           2: {
             x: isMobile ? -1.4 : 2.8, // Moved slightly more right (2.5 -> 2.8)
@@ -147,7 +153,11 @@ export const Experience = (props) => {
           },
         }}
       >
-        <Avatar animations={characterAnimation} wireframe={section === 1} />
+        <Avatar
+          animations={characterAnimation}
+          wireframe={section === 1}
+          script={rocketMode ? null : (section === 0 ? "IntroPageaudio" : section === 2 ? "Projectpageaudio" : section === 3 ? "contactpageaudio" : "")}
+        />
       </motion.group>
       <ambientLight intensity={1} />
       <motion.group

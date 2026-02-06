@@ -181,7 +181,7 @@ const AboutSection = (props) => {
       </motion.p>
       <motion.button
         onClick={() => setSection(3)}
-        className={`bg-space-button-light hover:bg-pink-700 dark:bg-space-500 dark:hover:bg-space-600 text-white py-4 px-8 transition-colors shadow-[0_0_15px_rgba(190,24,93,0.5)] dark:shadow-[0_0_15px_rgba(147,51,234,0.5)] hover:shadow-[0_0_25px_rgba(190,24,93,0.8)] dark:hover:shadow-[0_0_25px_rgba(147,51,234,0.8)]
+        className={`bg-purple-500 hover:bg-pink-700 dark:bg-space-500 dark:hover:bg-space-600 text-white py-4 px-8 transition-colors shadow-[0_0_15px_rgba(190,24,93,0.5)] dark:shadow-[0_0_15px_rgba(147,51,234,0.5)] hover:shadow-[0_0_25px_rgba(190,24,93,0.8)] dark:hover:shadow-[0_0_25px_rgba(147,51,234,0.8)]
       rounded-lg font-bold text-lg mt-4 md:mt-16`}
         initial={{
           opacity: 0,
@@ -356,7 +356,7 @@ const SkillsSection = ({ menuOpened }) => {
           transition={{ duration: 0.8, delay: 0.5 }}
         >
           <div className="text-xl font-bold text-gray-900 dark:text-white mb-2 font-basteleur">About Me</div>
-          <p className="text-gray-800 dark:text-gray-200">👋my developer name is callmegus</p>
+          <p className="text-gray-800 dark:text-gray-200">👋my developer name is Callmegus</p>
           {/* Arrow pointing right */}
           <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-l-[15px] border-l-white/30 dark:border-l-black/40 blur-[1px]"></div>
           <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-l-[15px] border-l-white/30 dark:border-l-black/40"></div>
@@ -450,7 +450,7 @@ const ContactSection = () => {
 
       {/* Main Contact Card - Glassmorphism Style */}
       <div className="w-full max-w-lg">
-        <div className="p-8 rounded-2xl bg-white/80 dark:bg-zinc-800/90 backdrop-blur-lg shadow-xl border border-white/20">
+        <div className="p-8 rounded-2xl bg-white/15 dark:bg-black/15 md:bg-white/80 md:dark:bg-zinc-800/90 backdrop-blur-lg shadow-xl border border-white/20">
           {state.succeeded ? (
             <div className="text-center py-8">
               <div className="text-5xl mb-4">✨</div>
