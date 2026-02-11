@@ -31,42 +31,42 @@ export const Menu = (props) => {
           <div className="absolute top-[10%] left-[30%] w-12 h-12 rounded-full opacity-80"
             style={{
               background: 'radial-gradient(circle at 30% 30%, #fbcfe8, #db2777)',
-              boxShadow: 'inset -2px -2px 6px rgba(190, 24, 93, 0.5), 0 0 15px rgba(219, 39, 119, 0.6)'
+              boxShadow: 'inset -2px -2px 6px rgba(190, 24, 93, 0.5), 0 0 25px rgba(219, 39, 119, 0.8), 0 0 40px rgba(124, 58, 237, 0.6)'
             }}></div>
 
           {/* Crater 2 - Cyan/Blue */}
           <div className="absolute top-[20%] left-[60%] w-8 h-8 rounded-full opacity-70"
             style={{
               background: 'radial-gradient(circle at 30% 30%, #cffafe, #06b6d4)',
-              boxShadow: 'inset -2px -2px 6px rgba(8, 145, 178, 0.5), 0 0 10px rgba(6, 182, 212, 0.6)'
+              boxShadow: 'inset -2px -2px 6px rgba(8, 145, 178, 0.5), 0 0 20px rgba(6, 182, 212, 0.8), 0 0 40px rgba(124, 58, 237, 0.6)'
             }}></div>
 
           {/* Crater 3 - Purple/Violet (Large) */}
           <div className="absolute top-[50%] left-[20%] w-24 h-24 rounded-full opacity-60"
             style={{
               background: 'radial-gradient(circle at 30% 30%, #e9d5ff, #7c3aed)',
-              boxShadow: 'inset -4px -4px 10px rgba(124, 58, 237, 0.5), 0 0 20px rgba(139, 92, 246, 0.6)'
+              boxShadow: 'inset -4px -4px 10px rgba(124, 58, 237, 0.5), 0 0 30px rgba(139, 92, 246, 0.8), 0 0 50px rgba(124, 58, 237, 0.8)'
             }}></div>
 
           {/* Crater 4 - Orange/Peach */}
           <div className="absolute bottom-[20%] left-[50%] w-16 h-16 rounded-full opacity-70"
             style={{
               background: 'radial-gradient(circle at 30% 30%, #fed7aa, #ea580c)',
-              boxShadow: 'inset -3px -3px 8px rgba(234, 88, 12, 0.5), 0 0 15px rgba(249, 115, 22, 0.6)'
+              boxShadow: 'inset -3px -3px 8px rgba(234, 88, 12, 0.5), 0 0 25px rgba(249, 115, 22, 0.8), 0 0 40px rgba(124, 58, 237, 0.6)'
             }}></div>
 
           {/* Crater 5 - Indigo */}
           <div className="absolute bottom-[10%] left-[20%] w-10 h-10 rounded-full opacity-60"
             style={{
               background: 'radial-gradient(circle at 30% 30%, #c7d2fe, #4f46e5)',
-              boxShadow: 'inset -2px -2px 6px rgba(79, 70, 229, 0.5), 0 0 10px rgba(99, 102, 241, 0.6)'
+              boxShadow: 'inset -2px -2px 6px rgba(79, 70, 229, 0.5), 0 0 20px rgba(99, 102, 241, 0.8), 0 0 40px rgba(124, 58, 237, 0.6)'
             }}></div>
 
           {/* Crater 6 - Side Giant (Gray/Slate base with purple glow) */}
           <div className="absolute top-[40%] right-[-10%] w-32 h-32 rounded-full opacity-40"
             style={{
               background: 'radial-gradient(circle at 30% 30%, #9ca3af, #1f2937)',
-              boxShadow: 'inset -5px -5px 15px rgba(88, 28, 135, 0.6), 0 0 30px rgba(124, 58, 237, 0.5)'
+              boxShadow: 'inset -5px -5px 15px rgba(88, 28, 135, 0.6), 0 0 40px rgba(124, 58, 237, 0.8), 0 0 60px rgba(124, 58, 237, 0.6)'
             }}></div>
         </div>
 

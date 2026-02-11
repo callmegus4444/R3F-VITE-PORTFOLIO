@@ -31,10 +31,10 @@ export const Experience = (props) => {
   const cameraLookAtX = useMotionValue();
 
   useEffect(() => {
-    animate(cameraPositionX, menuOpened ? -5 : 0, {
+    animate(cameraPositionX, menuOpened ? -2 : 0, {
       ...framerMotionConfig,
     });
-    animate(cameraLookAtX, menuOpened ? 5 : 0, {
+    animate(cameraLookAtX, menuOpened ? 2 : 0, {
       ...framerMotionConfig,
     });
   }, [menuOpened]);
